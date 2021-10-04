@@ -12,7 +12,7 @@ def capture_settings(capture, height, width):
 
 
 cap = cv2.VideoCapture(0)
-capture_settings(cap, vHeight, vWidth)
+# capture_settings(cap, vHeight, vWidth)
 
 while cap.isOpened():
     success, img = cap.read()
