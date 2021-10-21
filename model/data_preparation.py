@@ -3,7 +3,7 @@ import tensorflow as tf
 import helper_functions as hf
 import augmentation as aug
 import pathlib
-import parameters
+from parameters import *
 import cv2
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -36,7 +36,7 @@ def split_dataset(dt, split):
 
 def split_dataframe(df):
     df = df.sample(frac=1)
-    train, test = train_test_split(df, test_size=parameters.TEST_SIZE)
+    train, test = train_test_split(df, test_size=TEST_SIZE)
     return train.reset_index(drop=True), test.reset_index(drop=True)
 
 
@@ -49,30 +49,25 @@ def dataset_to_dataframe(dataset):
     return pd.DataFrame(data)
 
 
-def prepare_all_data(df, vocab):
-    num_samples = len(df)
-    video_paths = df["video_name"].values.tolist()
-    vocab_layer = tf.keras.layers.StringLookup(vocabulary=vocab)
-    labels = [vocab_layer(df["tag"].values)]
-
-    for idx, path in enumerate(video_paths):
-        original_frames = hf.load_video('data\\' + train_df['tag'][idx] + '\\' + path, max_frames=parameters.FRAMES,
-                                        resize=parameters.VID_SHAPE)
-        # aug1_frames = aug.center_crop(original_frames, parameters.vid_shape)
-        # videos[parameters.aug_number * idx + 1,] = aug1_frames
-    return original_frames, labels
+def create_augmented_dataframe(df):
+    videos = []
+    labels = []
+    for idx, row in df.iterrows():
+        original_frames = hf.load_video('data\\' + row['tag'] + '\\' + row['video_name'''], max_frames=FRAMES,
+                                        resize=VID_SHAPE)
+        augmented_frames = aug.augment_video(original_frames)
+        for video in augmented_frames:
+            videos.append(video)
+            labels.append(row['tag'])
+    augmented_data = {'video': videos, 'tag': labels}
+    augmented_dataframe = pd.DataFrame(augmented_data)
+    augmented_dataframe = augmented_dataframe.sample(frac=1)
+    return augmented_dataframe
 
 
 # My dataset
-dataset = create_dataset(data_path, vocab)
+def prepare_dataframes():
+    dataset = create_dataset(data_path, vocab)
+    dataframe = dataset_to_dataframe(dataset)
+    return split_dataframe(dataframe)
 
-# train_data, test_data = split_dataset(dataset, train_test_split)
-# train_df = dataset_to_dataframe(train_data)
-# test_df = dataset_to_dataframe(test_data)
-dataframe = dataset_to_dataframe(dataset)
-train_df, test_df = split_dataframe(dataframe)
-
-#
-frames, labels = prepare_all_data(train_df, vocab)
-aug_frames = aug.augment_video(frames)
-# hf.to_gif(frames)

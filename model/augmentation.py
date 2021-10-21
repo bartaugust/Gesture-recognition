@@ -43,6 +43,6 @@ def augmentation_3(frames, shape):
 
 def augment_video(frames):
     all_frames = [frames]
-    all_frames.append(augmentation_1(frames))
-    all_frames.append(augmentation_2(frames))
+    all_frames.append(np.array(augmentation_1(frames)))
+    all_frames.append(np.array(augmentation_2(frames)))
     return np.array(all_frames)
