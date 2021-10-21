@@ -40,15 +40,17 @@ def get_rnn():
     return model
 
 
-def run_cnn(cnn, df, vocab):
+vocab_layer = tf.keras.layers.StringLookup(vocabulary=dp.vocab)
+
+
+def run_cnn(cnn, df):
     num_samples = len(df)
     all_features = np.zeros(
         shape=(num_samples, MAX_SEQ_LENGTH, NUM_FEATURES), dtype="float32"
     )
-    all_masks = []
+    all_masks = np.zeros(shape=(num_samples, MAX_SEQ_LENGTH), dtype="bool")
 
-    vocab_layer = tf.keras.layers.StringLookup(vocabulary=vocab)
-    labels = [vocab_layer(df["tag"].values)]
+    labels = np.zeros(shape=(num_samples, 1))
 
     for idx, row in df.iterrows():
         frames = hf.load_video('data\\' + row['tag'] + '\\' + row['video_name'], max_frames=FRAMES,
@@ -56,11 +58,17 @@ def run_cnn(cnn, df, vocab):
         video_features = np.zeros(
             shape=(1, MAX_SEQ_LENGTH, NUM_FEATURES), dtype="float32"
         )
+        video_mask = np.zeros(shape=(1, MAX_SEQ_LENGTH), dtype="bool")
+
         for i in range(min(MAX_SEQ_LENGTH, frames.shape[0])):
             frame = frames[i]
             features = cnn.predict(frame[None, ...])
             video_features[:, i, :] = features
+            video_mask[:, i] = 1
+        labels[idx,] = vocab_layer([row['tag']])
         all_features[idx,] = video_features
+        all_masks[idx,] = video_mask
+
     return all_features, all_masks, labels
 
 
@@ -73,5 +81,7 @@ train_df, test_df = dp.prepare_dataframes()
 cnn_model = get_cnn()
 rnn_model = get_rnn()
 
-train_features, train_masks, train_labels = run_cnn(cnn_model, train_df, dp.vocab)
-test_features, test_masks, test_labels = run_cnn(cnn_model, test_df, dp.vocab)
+train_features, train_masks, train_labels = run_cnn(cnn_model, train_df)
+test_features, test_masks, test_labels = run_cnn(cnn_model, test_df)
+
+
