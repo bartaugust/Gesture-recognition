@@ -38,4 +38,4 @@ def load_video(path, max_frames=300, resize=(500, 500)):
 def to_gif(images):
     converted_images = np.clip(images * 255, 0, 255).astype(np.uint8)
     imageio.mimsave('./animation.gif', converted_images, fps=25)
-    return embed.embed_file(pathlib.Path('./animation.gif'))
+    return embed.embed_file(pathlib.Path('animation.gif'))

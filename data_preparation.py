@@ -1,11 +1,8 @@
 import pandas as pd
-import tensorflow as tf
 import helper_functions as hf
 import augmentation as aug
 import pathlib
 from parameters import *
-import cv2
-import numpy as np
 from sklearn.model_selection import train_test_split
 
 data_path = pathlib.Path.cwd() / 'data'
