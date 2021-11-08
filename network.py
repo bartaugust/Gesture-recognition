@@ -10,9 +10,9 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 def get_dataset():
     train_audio_path = tf.keras.utils.get_file(
-        "imagenet",
+        "d2.tar.gz",
         "https://image-net.org/data/ILSVRC/2012/ILSVRC2012_img_test_v10102019.tar",
-        cache_subdir='datasets\imagenet',
+        cache_subdir='D:\datasets\dk',
         extract=True)
 
     # dataset = tfds.load('imagenet2012')
@@ -74,12 +74,24 @@ class ConvolutionalNetwork(Network):
 
         conv_layer_1 = layers.Conv2D(32, (3, 3), activation='relu')(input_layer)
         max_pool_layer_1 = layers.MaxPooling2D((2, 2))(conv_layer_1)
+        conv_layer_2 = layers.Conv2D(64, (3, 3), activation='relu')(max_pool_layer_1)
+        max_pool_layer_2 = layers.MaxPooling2D((2, 2))(conv_layer_2)
+        conv_layer_3 = layers.Conv2D(64, (3, 3), activation='relu')(max_pool_layer_2)
 
-        flatted_layer = layers.Flatten()(max_pool_layer_1)
+        flatted_layer = layers.Flatten()(conv_layer_3)
         dense_layer_1 = layers.Dense(NUM_FEATURES, activation='relu')(flatted_layer)
 
-        output_layer = layers.Dense()(dense_layer_1)
+        output_layer = layers.Dense(3, activation='softmax')(dense_layer_1)
         self.model = models.Model(input_layer, output_layer)
+
+        self.model.compile(optimizer='rmsprop',
+                           loss='categorical_crossentropy',
+                           metrics=['accuracy'])
+
+    def get_model_without_output(self):
+        new_output_layer = self.model.layers[-2].output
+        new_model = models.Model(self.model.input,new_output_layer, name="feature_extractor")
+        return new_model
 
 
 class RecurrentNetwork(Network):
@@ -104,4 +116,6 @@ class RecurrentNetwork(Network):
             loss="sparse_categorical_crossentropy", optimizer="adam", metrics=["accuracy"]
         )
 
-# get_dataset()
+
+get_dataset()
+# cnn = ConvolutionalNetwork()
