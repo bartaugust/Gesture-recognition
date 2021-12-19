@@ -1,14 +1,3 @@
-VID_SHAPE = (224, 224)
-FRAMES = 500
-
-TEST_SIZE = 0.1
-VAL_SIZE = 0.3
-BATCH_SIZE = 10
-EPOCHS = 1000
-MAX_FRAMES = 500
-NUM_FEATURES = 2048
-
-ES_PATIENCE = 20
-ES_MIN_DELTA = 0.0001
-
-NUM_AUG = 3
+version https://git-lfs.github.com/spec/v1
+oid sha256:5cdf3d6c8ddc08309929495fe042067e6fb99d7b830fbfffd8871eec8a73c35c
+size 238

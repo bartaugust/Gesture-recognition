@@ -1,22 +1,3 @@
-import cv2
-import numpy as np
-
-res = '1080p'
-vHeight = 1920
-vWidth = 1080
-
-
-def capture_settings(capture, height, width):
-    capture.set(3, height)
-    capture.set(4, width)
-
-
-cap = cv2.VideoCapture(0)
-# capture_settings(cap, vHeight, vWidth)
-
-while cap.isOpened():
-    success, img = cap.read()
-
-    cv2.imshow("Img", img)
-    if cv2.waitKey(1) == ord('q'):
-        break
+version https://git-lfs.github.com/spec/v1
+oid sha256:257b123a836b092796dcaf6c921ff1e3d2a802ba0a7e0c4d6ef89eafea1fdf8a
+size 374
